@@ -1,0 +1,372 @@
+:root {
+    --bg:#05070a;
+    --accent:#00f2ff;
+    --accent-glow:rgba(0,242,255,.6);
+    --border:rgba(255,255,255,.1);
+    --success:#00ffa3;
+}
+
+/* ---------- BASE ---------- */
+body {
+    background:radial-gradient(circle at top,#101826,var(--bg));
+    color:#fff;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    margin:0;
+}
+
+/* ---------- NAV ---------- */
+.top-nav {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 32px;
+    margin-bottom:20px; /* ✅ GAP ADDED */
+}
+
+/* ---------- BRAND ---------- */
+.animated-brand {
+    animation: brandGlow 4s infinite;
+}
+
+.brand-main {
+    font-size:1.8rem;
+    font-weight:800;
+}
+
+.brand-dot {
+    color:var(--accent);
+    margin-left:2px;
+    animation: dotPulse 2s infinite;
+}
+
+@keyframes brandGlow {
+    50% { text-shadow:0 0 20px var(--accent); }
+}
+
+@keyframes dotPulse {
+    50% { opacity:.5; }
+}
+
+/* ---------- LOGIN ---------- */
+.login-btn {
+    padding:8px 18px;
+    background:transparent;
+    border:1px solid var(--accent);
+    border-radius:20px;
+    color:var(--accent);
+    cursor:pointer;
+    transition:.3s;
+}
+
+.login-btn:hover {
+    background:var(--accent);
+    color:#000;
+    box-shadow:0 0 20px var(--accent-glow);
+}
+
+/* ---------- MODE ---------- */
+.animated-mode {
+    margin-right:12px;
+    animation: modePulse 2s infinite;
+}
+
+@keyframes modePulse {
+    50% { opacity:.6; }
+}
+
+/* ---------- MAIN WRAPPER ---------- */
+.dashboard-wrapper {
+    max-width:1150px;
+    margin:auto;
+    padding:26px 20px 40px; /* ✅ MORE BOTTOM SPACE */
+}
+
+/* ---------- GRID ---------- */
+.bento-grid {
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:30px;              /* ✅ MORE SPACE BETWEEN COLUMNS */
+    margin-top:18px;       /* ✅ GAP BELOW STATUS */
+}
+
+/* ---------- SIDE COLUMN GAP ---------- */
+.side-column {
+    display:flex;
+    flex-direction:column;
+    gap:26px;              /* ✅ SCORE ↔ LOGS GAP */
+}
+
+/* ---------- TILE ---------- */
+.bento-tile {
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);
+    border-radius:20px;
+    backdrop-filter:blur(16px);
+}
+
+.compact {
+    padding:20px;          /* ✅ SLIGHTLY MORE INNER SPACE */
+}
+
+/* ---------- SCANNER ---------- */
+.scanner-tile h3 {
+    margin-bottom:16px;    /* ✅ HEADER GAP */
+}
+
+/* ---------- DROP ---------- */
+.drop-zone {
+    border:2px dashed var(--border);
+    border-radius:16px;
+    padding:34px;          /* ✅ BREATHING SPACE */
+    margin:16px 0 20px;    /* ✅ GAP ABOVE & BELOW */
+    text-align:center;
+    cursor:pointer;
+    transition:.4s;
+}
+
+.drop-zone:hover {
+    border-color:var(--accent);
+    box-shadow:0 0 25px var(--accent-glow);
+    transform:scale(1.04);
+}
+
+.drop-zone.drag-active {
+    background:rgba(0,242,255,.08);
+}
+
+/* ---------- PROGRESS ---------- */
+.progress-wrapper {
+    margin-top:14px;       /* ✅ SPACE ABOVE BAR */
+}
+
+/* ---------- GAUGE ---------- */
+.score-tile h3 {
+    margin-bottom:16px;    /* ✅ TITLE GAP */
+}
+
+.gauge-wrapper {
+    width:200px;
+    margin:12px auto 6px;  /* ✅ CENTER + SPACING */
+    position:relative;
+}
+
+.gauge-fill {
+    fill:none;
+    stroke:var(--accent);
+    stroke-width:6;
+    stroke-dasharray:126;
+    stroke-dashoffset:126;
+    filter:drop-shadow(0 0 10px var(--accent));
+    transition:1.6s cubic-bezier(.19,1,.22,1);
+}
+
+.gauge-bg {
+    stroke:rgba(255,255,255,.08);
+    stroke-width:6;
+    fill:none;
+}
+
+.gauge-label {
+    position:absolute;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:2.3rem;
+    font-weight:800;
+    color:var(--accent);
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse {
+    50% { opacity:.6; }
+}
+
+/* ---------- HISTORY ---------- */
+.history-tile {
+    margin-top:40px;       /* ✅ BIG SEPARATION FROM GRID */
+}
+
+.history-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;              /* ✅ MORE CARD GAP */
+    margin-top:16px;       /* ✅ GAP BELOW TITLE */
+}
+
+.history-item {
+    aspect-ratio:1;
+    border-radius:12px;
+    background:rgba(255,255,255,.05);
+    overflow:hidden;
+}
+
+.history-item img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:.4s;
+}
+
+.history-item:hover img {
+    transform:scale(1.1);
+}
+
+/* ---------- UTIL ---------- */
+/* ---------- UTIL ---------- */
+.hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* =======================
+   AUTH / LOGIN UI
+======================= */
+
+.auth-page {
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:radial-gradient(circle at top,#101826,#05070a);
+}
+
+.auth-wrapper {
+    animation: authFadeUp 1s ease forwards;
+}
+
+@keyframes authFadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+.auth-card {
+    width:360px;
+    padding:32px 28px;
+    border-radius:22px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12);
+    backdrop-filter:blur(20px);
+    box-shadow:0 0 40px rgba(0,242,255,0.15);
+    text-align:center;
+    animation: glowPulse 4s infinite;
+}
+
+@keyframes glowPulse {
+    50% { box-shadow:0 0 60px rgba(0,242,255,0.35); }
+}
+
+.auth-title {
+    font-size:1.9rem;
+    font-weight:800;
+    margin-bottom:6px;
+}
+
+.auth-subtitle {
+    font-size:0.9rem;
+    opacity:0.7;
+    margin-bottom:22px;
+}
+
+.auth-box {
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.auth-box input {
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.08);
+    color:#fff;
+    font-size:0.9rem;
+    outline:none;
+    transition:.3s;
+}
+
+.auth-box input:focus {
+    border-color:var(--accent);
+    box-shadow:0 0 14px var(--accent-glow);
+    background:rgba(255,255,255,0.12);
+}
+
+.auth-btn {
+    margin-top:6px;
+    padding:12px;
+    border-radius:18px;
+    border:none;
+    background:linear-gradient(135deg,var(--accent),#00bcd4);
+    font-weight:700;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.auth-btn:hover {
+    transform:scale(1.05);
+    box-shadow:0 0 30px var(--accent-glow);
+}
+
+.auth-switch {
+    margin-top:14px;
+    font-size:0.85rem;
+    color:var(--accent);
+    cursor:pointer;
+    transition:.3s;
+}
+
+.auth-switch:hover {
+    opacity:0.7;
+}
+/* =======================
+   AESTHETIC BACK BUTTON
+======================= */
+
+.back-float-btn {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+
+    color: #cfd8dc;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    backdrop-filter: blur(12px);
+    transition: all 0.35s ease;
+    z-index: 1000;
+}
+
+/* Hover – premium subtle glow */
+.back-float-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 16px var(--accent-glow);
+    transform: translateX(-6px);
+    background: rgba(0, 242, 255, 0.08);
+}
+
+/* Optional: soft entrance animation */
+.back-float-btn {
+    animation: backFadeIn 0.8s ease forwards;
+}
+
+@keyframes backFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+

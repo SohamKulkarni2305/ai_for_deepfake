@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DeepScan AI | Forensic Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="top-nav">
+    <div class="brand animated-brand">
+        <span class="brand-main">DeepScan</span><span class="brand-dot">.AI</span>
+        <small>Unified Neural Integrity Suite</small>
+    </div>
+
+    <div class="auth-zone">
+        <span class="badge animated-mode" id="session-status">Guest Mode</span>
+        <button class="login-btn" id="auth-trigger">Login</button>
+    </div>
+</nav>
+
+<main class="dashboard-wrapper">
+
+    <span class="status-subtext animated-status" id="main-status">Guest Mode Active</span>
+
+    <div class="bento-grid">
+
+        <!-- SCANNER -->
+        <section class="bento-tile compact scanner-tile" id="upload-container">
+            <h3>Scanner Unit</h3>
+
+            <div class="scanning-laser"></div>
+
+            <div id="preview-area" class="hidden">
+                <img id="image-preview">
+            </div>
+
+            <div class="drop-zone" id="drop-zone">
+                <p><strong>Click or Drag Image</strong></p>
+                <small>AI Forensic Mode</small>
+                <input type="file" id="fileInput" hidden>
+            </div>
+
+            <div class="progress-wrapper">
+                <div class="progress-bar" id="main-progress"></div>
+            </div>
+        </section>
+
+        <!-- SIDE -->
+        <div class="side-column">
+
+            <section class="bento-tile compact score-tile">
+                <h3>Authenticity Score</h3>
+                <div class="gauge-wrapper">
+                    <svg viewBox="0 0 100 50">
+                        <path class="gauge-bg" d="M10,45 A35,35 0 0,1 90,45"/>
+                        <path id="gauge-progress" class="gauge-fill" d="M10,45 A35,35 0 0,1 90,45"/>
+                    </svg>
+                    <div class="gauge-label">
+                        <span id="gauge-percent">0</span>%
+                    </div>
+                </div>
+            </section>
+
+            <section class="bento-tile compact logs-tile">
+                <h3>Engine Logs</h3>
+                <div id="results-grid"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- HISTORY -->
+    <section class="bento-tile compact history-tile">
+        <h3>Scan History <span id="history-lock">🔒</span></h3>
+        <div class="history-grid" id="history-container">
+            <div class="history-item placeholder"></div>
+            <div class="history-item placeholder"></div>
+            <div class="history-item placeholder"></div>
+        </div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+document.getElementById("auth-trigger").onclick = () => {
+    window.location.href = "/login";
+};
+</script>
+
+</body>
+</html>

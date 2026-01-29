@@ -1,0 +1,2 @@
+1.add virtual enviroment---python -m venv venv
+2.install flask---pip install flask

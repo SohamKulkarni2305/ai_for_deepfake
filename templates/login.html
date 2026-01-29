@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DeepScan AI | Secure Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="auth-page">
+
+<!-- ✅ FLOATING BACK BUTTON (SEPARATE) -->
+<button class="back-float-btn" onclick="goBack()">← Back</button>
+
+<div class="auth-wrapper">
+
+    <div class="auth-card">
+
+        <h2 class="auth-title">
+            DeepScan<span class="brand-dot">.AI</span>
+        </h2>
+        <p class="auth-subtitle">Secure Neural Access Portal</p>
+
+        <!-- LOGIN -->
+        <div class="auth-box" id="login-box">
+            <input type="email" id="login-email" placeholder="Email Address">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button class="auth-btn" onclick="login()">Login</button>
+            <p class="auth-switch" onclick="toggle()">Create new account</p>
+        </div>
+
+        <!-- REGISTER -->
+        <div class="auth-box hidden" id="register-box">
+            <input type="text" id="reg-name" placeholder="Full Name">
+            <input type="email" id="reg-email" placeholder="Email Address">
+            <input type="password" id="reg-pass" placeholder="Password">
+            <button class="auth-btn" onclick="register()">Register</button>
+            <p class="auth-switch" onclick="toggle()">Already have an account?</p>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("login-box").classList.remove("hidden");
+    document.getElementById("register-box").classList.add("hidden");
+});
+
+function toggle() {
+    document.getElementById("login-box").classList.toggle("hidden");
+    document.getElementById("register-box").classList.toggle("hidden");
+}
+
+function register(){
+    const user = {
+        name: document.getElementById("reg-name").value,
+        email: document.getElementById("reg-email").value,
+        pass: document.getElementById("reg-pass").value
+    };
+    localStorage.setItem("ds_user", JSON.stringify(user));
+    alert("Account created successfully!");
+    toggle();
+}
+
+function login(){
+    const u = JSON.parse(localStorage.getItem("ds_user"));
+    if (!u) return alert("No account found");
+
+    if (u.email === login-email.value && u.pass === login-pass.value) {
+        localStorage.setItem("ds_logged", "true");
+        window.location.href = "/";
+    } else {
+        alert("Invalid credentials");
+    }
+}
+
+function goBack() {
+    window.location.href = "/";
+}
+</script>
+
+</body>
+</html>

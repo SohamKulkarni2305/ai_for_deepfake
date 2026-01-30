@@ -30,25 +30,27 @@
     <div class="bento-grid">
 
         <!-- SCANNER -->
-        <section class="bento-tile compact scanner-tile" id="upload-container">
-            <h3>Scanner Unit</h3>
+        <section class="bento-tile compact scanner-tile drop-zone"
+        id="upload-container"
+        tabindex="0"
+        role="button"
+        aria-label="Upload Image Area">
 
-            <div class="scanning-laser"></div>
+    <h3>Scanner Unit</h3>
+    <div class="scanning-laser"></div>
 
-            <div id="preview-area" class="hidden">
-                <img id="image-preview">
-            </div>
+    <input type="file" id="file-input" hidden accept="image/*">
 
-            <div class="drop-zone" id="drop-zone">
-                <p><strong>Click or Drag Image</strong></p>
-                <small>AI Forensic Mode</small>
-                <input type="file" id="fileInput" hidden>
-            </div>
-
-            <div class="progress-wrapper">
-                <div class="progress-bar" id="main-progress"></div>
-            </div>
-        </section>
+    <p class="drop-text">
+        Drag and Drop Image<br>
+        <span>or Click / Press Enter to Browse</span>
+    </p>
+    <div class="scan-actions hidden" id="scan-actions">
+    <button class="scan-btn save" data-action="save">💾 Save</button>
+    <button class="scan-btn confirm">✔ Confirm</button>
+    <button class="scan-btn back">← Back</button>
+</div>
+</section>
 
         <!-- SIDE -->
         <div class="side-column">

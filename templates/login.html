@@ -1,86 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>DeepScan AI | Secure Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>DeepScan AI | Secure Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body class="auth-page">
 
-<!-- ✅ FLOATING BACK BUTTON (SEPARATE) -->
-<button class="back-float-btn" onclick="goBack()">← Back</button>
+    <button class="back-float-btn" onclick="goBack()">← Back</button>
 
-<div class="auth-wrapper">
+    <main class="auth-wrapper">
+        <section class="auth-card">
+            <header>
+                <h2 class="auth-title">DeepScan<span class="brand-dot">.AI</span></h2>
+                <p class="auth-subtitle">Secure Neural Access Portal</p>
+            </header>
 
-    <div class="auth-card">
+            <div class="auth-box" id="login-box">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="you@domain.com" required>
+                </div>
+                <div class="input-group password-wrap">
+                    <label>Password</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" minlength="8" required>
+                    <span class="toggle-pass" onclick="togglePassword()">👁️</span>
+                    <small class="caps-warning hidden">⚠ Caps Lock is ON</small>
+                </div>
+                <button class="auth-btn" id="login-btn" onclick="login()">Login</button>
+                <button class="bio-btn">🧪 Scan Biometrics</button>
+                <p class="auth-switch" onclick="toggle()">Create new account</p>
+            </div>
 
-        <h2 class="auth-title">
-            DeepScan<span class="brand-dot">.AI</span>
-        </h2>
-        <p class="auth-subtitle">Secure Neural Access Portal</p>
+            <div class="auth-box hidden" id="register-box">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="reg-name" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="reg-pass" minlength="8" required>
+                </div>
+                <button class="auth-btn" onclick="register()">Register</button>
+                <p class="auth-switch" onclick="toggle()">Already have an account?</p>
+            </div>
+        </section>
+    </main>
 
-        <!-- LOGIN -->
-        <div class="auth-box" id="login-box">
-            <input type="email" id="login-email" placeholder="Email Address">
-            <input type="password" id="login-pass" placeholder="Password">
-            <button class="auth-btn" onclick="login()">Login</button>
-            <p class="auth-switch" onclick="toggle()">Create new account</p>
-        </div>
+    <script>
+        const loginBox = document.getElementById("login-box");
+const registerBox = document.getElementById("register-box");
+const loginEmail = document.getElementById("login-email");
+const loginPass = document.getElementById("login-pass");
+const loginBtn = document.getElementById("login-btn");
+const capsWarning = document.querySelector(".caps-warning");
+const authCard = document.querySelector(".auth-card");
+const bioBtn = document.querySelector(".bio-btn");
 
-        <!-- REGISTER -->
-        <div class="auth-box hidden" id="register-box">
-            <input type="text" id="reg-name" placeholder="Full Name">
-            <input type="email" id="reg-email" placeholder="Email Address">
-            <input type="password" id="reg-pass" placeholder="Password">
-            <button class="auth-btn" onclick="register()">Register</button>
-            <p class="auth-switch" onclick="toggle()">Already have an account?</p>
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("login-box").classList.remove("hidden");
-    document.getElementById("register-box").classList.add("hidden");
-});
-
+/* --- UI TOGGLES --- */
 function toggle() {
-    document.getElementById("login-box").classList.toggle("hidden");
-    document.getElementById("register-box").classList.toggle("hidden");
+    loginBox.classList.toggle("hidden");
+    registerBox.classList.toggle("hidden");
 }
 
-function register(){
-    const user = {
-        name: document.getElementById("reg-name").value,
-        email: document.getElementById("reg-email").value,
-        pass: document.getElementById("reg-pass").value
-    };
-    localStorage.setItem("ds_user", JSON.stringify(user));
-    alert("Account created successfully!");
-    toggle();
-}
-
-function login(){
-    const u = JSON.parse(localStorage.getItem("ds_user"));
-    if (!u) return alert("No account found");
-
-    if (u.email === login-email.value && u.pass === login-pass.value) {
-        localStorage.setItem("ds_logged", "true");
-        window.location.href = "/";
-    } else {
-        alert("Invalid credentials");
-    }
+function togglePassword() {
+    loginPass.type = loginPass.type === "password" ? "text" : "password";
 }
 
 function goBack() {
     window.location.href = "/";
 }
-</script>
 
+function shakeError(msg) {
+    authCard.classList.add("error");
+    setTimeout(() => authCard.classList.remove("error"), 450);
+    console.error(msg);
+}
+
+/* --- LISTENERS --- */
+loginPass.addEventListener("keyup", e => {
+    capsWarning.classList.toggle("hidden", !e.getModifierState("CapsLock"));
+});
+
+loginPass.addEventListener("input", () => {
+    const val = loginPass.value;
+    loginPass.classList.remove("weak", "medium", "strong");
+    if (val.length >= 12) loginPass.classList.add("strong");
+    else if (val.length >= 8) loginPass.classList.add("medium");
+    else if (val.length > 0) loginPass.classList.add("weak");
+});
+
+bioBtn.addEventListener("click", () => {
+    bioBtn.innerText = "🔍 Scanning...";
+    bioBtn.classList.add("scanning");
+    setTimeout(() => {
+        bioBtn.innerText = "✅ Biometrics Verified";
+        bioBtn.classList.remove("scanning");
+    }, 2200);
+});
+
+/* --- BACKEND CORE FUNCTIONS --- */
+
+async function register() {
+    const name = document.getElementById("reg-name").value;
+    const email = document.getElementById("reg-email").value;
+    const pass = document.getElementById("reg-pass").value;
+
+    if (!name || !email || !pass) return shakeError("Fill all fields");
+
+    try {
+        const response = await fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, pass }) 
+        });
+        const data = await response.json();
+        if (data.success) {
+            alert("Account created! Please login.");
+            toggle(); 
+        } else {
+            shakeError(data.message);
+        }
+    } catch (err) {
+        shakeError("Registration failed.");
+    }
+}
+
+async function login() {
+    const email = loginEmail.value;
+    const password = loginPass.value;
+
+    if (!email || !password) return shakeError("Fields cannot be empty");
+
+    loginBtn.classList.add("loading");
+    
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    try {
+        const res = await fetch("/login", {
+            method: "POST",
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            localStorage.setItem("ds_logged", "true");
+            window.location.href = "/"; 
+        } else {
+            shakeError(data.message);
+        }
+    } catch (err) {
+        shakeError("Server error.");
+    } finally {
+        loginBtn.classList.remove("loading");
+    }
+}
+    </script>
 </body>
 </html>

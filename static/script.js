@@ -15,7 +15,7 @@ function shakeError(msg) {
     console.error(msg);
 }
 
-/* ---------- AUTHENTICATION (Global Scope for HTML onclick) ---------- */
+/* ---------- AUTHENTICATION ---------- */
 async function register() {
     const regBtn = document.querySelector('#register-box .auth-btn');
     const regName = document.getElementById("reg-name").value;
@@ -34,11 +34,7 @@ async function register() {
         const response = await fetch("/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: regName,
-                email: regEmail,
-                pass: regPass 
-            })
+            body: JSON.stringify({ name: regName, email: regEmail, pass: regPass })
         });
 
         const data = await response.json();
@@ -48,7 +44,7 @@ async function register() {
         } else {
             shakeError(data.message || "Registration failed");
         }
-    } catch (err) {
+    } catch {
         shakeError("Network error. Please try again later.");
     } finally {
         regBtn.classList.remove("loading");
@@ -67,25 +63,22 @@ async function login() {
     }
 
     loginBtn.classList.add("loading");
-    
+
     const formData = new FormData();
     formData.append("email", loginEmail.value);
     formData.append("password", loginPass.value);
 
     try {
-        const res = await fetch("/login", {
-            method: "POST",
-            body: formData
-        });
+        const res = await fetch("/login", { method: "POST", body: formData });
         const data = await res.json();
 
         if (data.success) {
             localStorage.setItem("ds_logged", "true");
-            window.location.href = "/"; 
+            window.location.href = "/";
         } else {
             shakeError(data.message);
         }
-    } catch (err) {
+    } catch {
         shakeError("Server error.");
     } finally {
         loginBtn.classList.remove("loading");
@@ -105,13 +98,15 @@ document.addEventListener("DOMContentLoaded", () => {
         scanActions: document.getElementById("scan-actions")
     };
 
+    const MAX_FILE_SIZE_MB = 8;
+    const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/tiff"];
+    const timeline = document.getElementById("scan-timeline");
+
     let scanning = false;
     let lastResults = null;
     let lastImage = null;
 
-    el.authBtn?.addEventListener("click", () => {
-        window.location.href = "/login";
-    });
+    el.authBtn?.addEventListener("click", () => window.location.href = "/login");
 
     /* ---------- DRAG & DROP ---------- */
     el.dropZone?.addEventListener("click", () => el.fileInput.click());
@@ -141,23 +136,53 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ---------- SCANNING LOGIC ---------- */
     function handleFile(file) {
         if (!file || scanning) return;
+
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            el.statusText.textContent = "Unsupported file type";
+            el.statusText.style.color = "#ff4444";
+            return;
+        }
+
+        if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+            el.statusText.textContent = "File too large (max 8MB)";
+            el.statusText.style.color = "#ff4444";
+            return;
+        }
+
         scanning = true;
 
         showImagePreview(file);
-        el.scanActions?.classList.add("hidden");
+        el.scanActions.classList.add("hidden");
         el.resultsGrid.innerHTML = "";
         resetGauge();
 
         el.dropZone.classList.add("is-scanning", "scan-wave");
 
-        const phases = ["Extracting image features…", "Analyzing pixel consistency…", "Verifying metadata integrity…", "Running GAN detection models…"];
+        const phases = [
+            "Extracting image features…",
+            "Analyzing pixel consistency…",
+            "Verifying metadata integrity…",
+            "Running GAN detection models…"
+        ];
+
         let i = 0;
         el.statusText.textContent = phases[0];
-        
+        timeline?.classList.remove("hidden");
+        updateTimeline(0);
+
         const phaseTimer = setInterval(() => {
             i++;
-            if (i < phases.length) el.statusText.textContent = phases[i];
+            if (i < phases.length) {
+                el.statusText.textContent = phases[i];
+                updateTimeline(i);
+            }
         }, 900);
+
+        const maxPhaseTimeout = setTimeout(() => {
+            clearInterval(phaseTimer);
+            el.statusText.textContent = "Finalizing analysis…";
+            updateTimeline(phases.length - 1);
+        }, 4500);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -166,6 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(r => r.json())
             .then(data => {
                 clearInterval(phaseTimer);
+                clearTimeout(maxPhaseTimeout);
+
                 el.dropZone.classList.remove("is-scanning", "scan-wave");
                 if (!data.success) throw new Error();
 
@@ -177,13 +204,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 el.statusText.textContent = "Scan Complete";
                 el.statusText.style.color = "#00ffa3";
-                el.scanActions?.classList.remove("hidden");
+                el.scanActions.classList.remove("hidden");
             })
             .catch(() => {
+                clearInterval(phaseTimer);
+                clearTimeout(maxPhaseTimeout);
+
+                el.dropZone.classList.remove("is-scanning", "scan-wave");
                 el.statusText.textContent = "Scan Failed";
                 el.statusText.style.color = "#ff4444";
             })
             .finally(() => scanning = false);
+    }
+
+    function updateTimeline(step) {
+        timeline?.querySelectorAll("li").forEach((li, idx) => {
+            li.classList.remove("active", "done");
+            if (idx < step) li.classList.add("done");
+            if (idx === step) li.classList.add("active");
+        });
     }
 
     function showImagePreview(file) {
@@ -194,9 +233,6 @@ document.addEventListener("DOMContentLoaded", () => {
             wrap.className = "scanner-preview";
             const img = document.createElement("img");
             img.src = reader.result;
-            img.style.maxHeight = "220px";
-            img.style.width = "100%";
-            img.style.objectFit = "contain";
             wrap.appendChild(img);
             el.dropZone.appendChild(wrap);
         };
@@ -216,8 +252,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function animateGaugeFromResults(results) {
         let total = 0, count = 0;
         results.forEach(r => {
-            const match = String(r.score).match(/[\d.]+/);
-            if (match) { total += parseFloat(match[0]); count++; }
+            const m = String(r.score).match(/[\d.]+/);
+            if (m) { total += parseFloat(m[0]); count++; }
         });
         const score = count ? Math.round(total / count) : 0;
         el.gauge.style.strokeDashoffset = 126 - (126 * score) / 100;
@@ -241,18 +277,16 @@ document.addEventListener("DOMContentLoaded", () => {
         el.dropZone.classList.remove("is-scanning", "scan-wave", "drag-over");
         el.statusText.textContent = "Guest Mode Active";
         el.statusText.style.color = "#ffffff";
+        timeline?.classList.add("hidden");
+        timeline?.querySelectorAll("li").forEach(li => li.classList.remove("active", "done"));
         resetGauge();
         scanning = false;
     }
 
-    el.scanActions?.addEventListener("click", e => {
+    el.scanActions.addEventListener("click", e => {
         const action = e.target.closest("button")?.dataset.action;
         if (action === "back") fullReset();
-        if (action === "confirm") {
-            el.scanActions.classList.add("hidden");
-            el.statusText.textContent = "Task Completed";
-            setTimeout(fullReset, 600);
-        }
+        if (action === "confirm") setTimeout(fullReset, 600);
         if (action === "save") {
             if (localStorage.getItem("ds_logged") !== "true") {
                 alert("Login required to save results");

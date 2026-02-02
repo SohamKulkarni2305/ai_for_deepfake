@@ -4,6 +4,7 @@
     --accent-glow:rgba(0,242,255,.6);
     --border:rgba(255,255,255,.1);
     --success:#00ffa3;
+    --danger:#ff4d4d;
 }
 
 /* ================= BASE ================= */
@@ -37,6 +38,13 @@ body {
     color:var(--accent);
     margin-left:2px;
     animation: dotPulse 2s infinite;
+}
+
+.brand-sub {
+    font-size:0.7rem;
+    opacity:0.65;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
 }
 
 @keyframes brandGlow {
@@ -101,20 +109,26 @@ body {
     position:relative;
     transition:.4s;
 }
-/* Allow interaction only for scan action buttons */
-.drop-zone * {
-    pointer-events: none;
+
+.drop-zone.invalid {
+    border-color:#ff4444;
+    box-shadow:0 0 22px rgba(255,68,68,0.45);
 }
 
-.scan-actions,
-.scan-actions * {
-    pointer-events: auto;
+.drop-zone.valid {
+    border-color:var(--success);
+    box-shadow:0 0 22px rgba(0,255,163,0.45);
 }
+
+/* Pointer events */
+.drop-zone * { pointer-events:none; }
+.scan-actions,
+.scan-actions *,
+.scan-timeline { pointer-events:auto; }
 
 .drop-zone:hover {
     border-color:var(--accent);
     box-shadow:0 0 25px var(--accent-glow);
-    transform:scale(1.04);
 }
 
 .drag-over {
@@ -126,6 +140,7 @@ body {
     box-shadow:0 0 45px rgba(0,242,255,.45);
     animation:scanPulse 1.8s ease-in-out infinite;
 }
+
 @keyframes scanPulse {
     0% { box-shadow:0 0 30px rgba(0,242,255,.35); }
     50% { box-shadow:0 0 75px rgba(0,242,255,.75); }
@@ -140,15 +155,90 @@ body {
     animation:neuralWave 3s cubic-bezier(.19,1,.22,1) infinite;
     pointer-events:none;
 }
+
 @keyframes neuralWave {
     0% { transform:scale(.85); opacity:.35; }
     50% { transform:scale(1.05); opacity:.8; }
     100% { transform:scale(.85); opacity:.35; }
 }
 
-.scan-complete {
-    box-shadow:0 0 55px rgba(0,255,163,.6);
-    transition:box-shadow .9s ease;
+/* ================= SCAN TIMELINE ================= */
+.scan-timeline {
+    list-style:none;
+    padding:0;
+    margin:14px 0 0;
+    font-size:0.75rem;
+    text-align:left;
+}
+
+.scan-timeline li {
+    padding-left:18px;
+    margin:6px 0;
+    position:relative;
+    opacity:0.45;
+}
+
+.scan-timeline li::before {
+    content:"○";
+    position:absolute;
+    left:0;
+    color:rgba(255,255,255,0.35);
+}
+
+.scan-timeline li.active {
+    opacity:1;
+    color:var(--accent);
+}
+
+.scan-timeline li.active::before {
+    content:"●";
+    color:var(--accent);
+}
+
+.scan-timeline li.done {
+    opacity:0.75;
+    color:var(--success);
+}
+
+.scan-timeline li.done::before {
+    content:"✔";
+    color:var(--success);
+}
+
+/* ================= IMAGE PREVIEW ================= */
+.scanner-preview {
+    position:relative;
+    width:100%;
+    margin-top:14px;
+    border-radius:14px;
+    overflow:hidden;
+    animation:previewFadeIn .6s ease forwards;
+}
+
+@keyframes previewFadeIn {
+    from { opacity:0; transform:scale(.96); }
+    to { opacity:1; transform:scale(1); }
+}
+
+.scanner-preview img {
+    width:100%;
+    display:block;
+    border-radius:14px;
+    filter:saturate(1.1) contrast(1.05);
+}
+
+.scanner-preview::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size:18px 18px;
+}
+
+.is-scanning .scanner-preview img {
+    filter:brightness(.9);
 }
 
 /* ================= GAUGE ================= */
@@ -157,11 +247,13 @@ body {
     margin:12px auto 6px;
     position:relative;
 }
+
 .gauge-bg {
     stroke:rgba(255,255,255,.08);
     stroke-width:6;
     fill:none;
 }
+
 .gauge-fill {
     fill:none;
     stroke:var(--accent);
@@ -171,221 +263,135 @@ body {
     filter:drop-shadow(0 0 10px var(--accent));
     transition:stroke-dashoffset 1.8s cubic-bezier(.19,1,.22,1);
 }
+
 .gauge-label {
-    position:absolute;
-    bottom:0;
-    left:50%;
-    transform:translateX(-50%);
     font-size:2.3rem;
     font-weight:800;
     color:var(--accent);
-    animation:pulse 2s infinite;
+    text-shadow:0 0 18px rgba(0,242,255,0.7);
 }
-@keyframes pulse { 50% { opacity:.6; } }
 
 /* ================= STATUS ================= */
-.status-animate {
-    animation:statusBreath 1.4s ease-in-out infinite;
-}
-@keyframes statusBreath {
-    from { opacity:.65; }
-    to { opacity:1; }
-}
+.status-error { color:#ff4444; }
+.status-success { color:var(--success); }
 
 /* ================= LOGS ================= */
 .log-item {
-    opacity:0;
-    transform:translateX(-14px) scale(.98);
-    animation:logStream .45s cubic-bezier(.22,1,.36,1) forwards;
-}
-@keyframes logStream {
-    to { opacity:1; transform:translateX(0) scale(1); }
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    font-size:0.8rem;
+    opacity:.9;
 }
 
 /* ================= HISTORY ================= */
-.history-tile { margin-top:40px; }
 .history-grid {
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:18px;
-    margin-top:16px;
 }
+
 .history-item {
     aspect-ratio:1;
     border-radius:12px;
     background:rgba(255,255,255,.05);
     overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    transition:.35s;
 }
-.history-item img {
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    transition:.4s;
-}
-.history-item:hover img {
-    transform:scale(1.1);
+.history-item:hover {
+    box-shadow:0 0 22px rgba(0,242,255,.35);
 }
 
-/* ================= UTIL ================= */
-.hidden {
-    display:none !important;
-    visibility:hidden !important;
-    opacity:0 !important;
-}
-/* ================= IMAGE PREVIEW IN SCANNER ================= */
-
-.scanner-preview {
-    position: relative;
-    width: 100%;
-    margin-top: 14px;
-    border-radius: 14px;
-    overflow: hidden;
-    animation: previewFadeIn 0.6s ease forwards;
+/* ================= HEATMAP MODAL ================= */
+.heatmap-modal {
+    position:fixed;
+    inset:0;
+    z-index:1000;
 }
 
-@keyframes previewFadeIn {
-    from { opacity: 0; transform: scale(0.96); }
-    to   { opacity: 1; transform: scale(1); }
+.heatmap-backdrop {
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(6px);
 }
 
-.scanner-preview img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 14px;
-    filter: saturate(1.1) contrast(1.05);
+.heatmap-card {
+    position:relative;
+    width:680px;
+    max-width:90%;
+    margin:6vh auto;
+    background:rgba(15,20,30,.85);
+    border-radius:20px;
+    backdrop-filter:blur(18px);
 }
-
-/* HUD grid overlay */
-.scanner-preview::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 18px 18px;
-    pointer-events: none;
-}
-
-/* While scanning, dim image slightly */
-.is-scanning .scanner-preview img {
-    filter: saturate(1) contrast(1) brightness(0.9);
-}
-/* Subtle scanning line over preview */
-.is-scanning .scanner-preview::before {
-    content: "";
-    position: absolute;
-    top: -20%;
-    left: 0;
-    width: 100%;
-    height: 20%;
-    background: linear-gradient(
-        to bottom,
-        transparent,
-        rgba(0,242,255,0.25),
-        transparent
-    );
-    animation: scanLine 1.6s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes scanLine {
-    to { top: 120%; }
-}
-.scanner-preview:hover img {
-    transform: scale(1.02);
-    transition: transform 0.4s ease;
-}
-/* ================= SCAN ACTION BUTTONS ================= */
-
-.scan-actions {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 18px;
-    animation: fadeUp 0.5s ease forwards;
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.scan-btn {
-    padding: 10px 18px;
-    border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-/* Confirm */
-.scan-btn.confirm {
-    border-color: var(--success);
-    color: var(--success);
-}
-
-.scan-btn.confirm:hover {
-    background: var(--success);
-    color: #000;
-    box-shadow: 0 0 24px rgba(0,255,163,0.6);
-}
-
-/* Back */
-.scan-btn.back:hover {
+/* Save button */
+.scan-btn.save {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+.scan-btn.save:hover {
+    background: var(--accent);
+    color: #000;
     box-shadow: 0 0 20px var(--accent-glow);
 }
+
+/* Heatmap button */
+.scan-btn.heatmap-btn {
+    border-color: #ff6a00;
+    color: #ff6a00;
+}
+
+.scan-btn.heatmap-btn:hover {
+    background: linear-gradient(135deg, #ff6a00, #ff0000);
+    color: #000;
+    box-shadow: 0 0 24px rgba(255,106,0,0.6);
+}
+#heatmap-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: normal;
+}
+
+
 /* =====================================================
    LOGIN PAGE – CLEAN & FINAL (SINGLE SOURCE OF TRUTH)
 ===================================================== */
 
-:root{
-  --bg:#05070a;
-  --accent:#00f2ff;
-  --accent-glow:rgba(0,242,255,.45);
-  --border:rgba(255,255,255,.2);
-  --danger:#ff4d4d;
-}
+body.auth-page {
+    --border:rgba(255,255,255,.2);
 
-/* ================= PAGE ================= */
-body.auth-page{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(0,242,255,.12), transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(0,188,212,.1), transparent 45%),
-    radial-gradient(circle at center,#101826,var(--bg));
-  font-family:'Plus Jakarta Sans',sans-serif;
-  color:#fff;
-  margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(0,242,255,.12), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(0,188,212,.1), transparent 45%),
+        radial-gradient(circle at center,#101826,var(--bg));
 }
 
 /* ================= BACK ================= */
 .back-float-btn{
-  position:fixed;
-  top:16px;
-  left:16px;
-  padding:6px 12px;
-  font-size:.75rem;
-  border:1px solid var(--accent);
-  background:transparent;
-  color:var(--accent);
-  border-radius:12px;
-  cursor:pointer;
+    position:fixed;
+    top:16px;
+    left:16px;
+    padding:6px 12px;
+    font-size:.75rem;
+    border:1px solid var(--accent);
+    background:transparent;
+    color:var(--accent);
+    border-radius:12px;
+    cursor:pointer;
 }
+
 .back-float-btn:hover{
-  background:var(--accent);
-  color:#000;
-  box-shadow:0 0 12px var(--accent-glow);
+    background:var(--accent);
+    color:#000;
+    box-shadow:0 0 12px var(--accent-glow);
 }
 
 /* ================= CARD ================= */
@@ -534,5 +540,6 @@ body.auth-page{
 }
 .auth-switch:hover{text-decoration:underline}
 
+
 /* ================= UTIL ================= */
-.hidden{display:none!important;}
+.hidden { display:none !important; }

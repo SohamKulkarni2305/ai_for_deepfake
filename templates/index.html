@@ -14,7 +14,7 @@
 <nav class="top-nav">
     <div class="brand animated-brand">
         <span class="brand-main">DeepScan</span><span class="brand-dot">.AI</span>
-        <small>Unified Neural Integrity Suite</small>
+        <div class="brand-sub">Unified Neural Integrity Suite</div>
     </div>
 
     <div class="auth-zone">
@@ -25,38 +25,50 @@
 
 <main class="dashboard-wrapper">
 
-    <span class="status-subtext animated-status" id="main-status">Guest Mode Active</span>
+    <span class="status-subtext animated-status" id="main-status">
+        Guest Mode Active
+    </span>
 
     <div class="bento-grid">
 
         <!-- SCANNER -->
         <section class="bento-tile compact scanner-tile drop-zone"
-        id="upload-container"
-        tabindex="0"
-        role="button"
-        aria-label="Upload Image Area">
+            id="upload-container"
+            tabindex="0"
+            role="button"
+            aria-label="Upload Image Area">
 
-    <h3>Scanner Unit</h3>
-    <div class="scanning-laser"></div>
+            <h3>Scanner Unit</h3>
 
-    <input type="file" id="file-input" hidden accept="image/*">
+            <input type="file" id="file-input" hidden accept="image/*">
 
-    <p class="drop-text">
-        Drag and Drop Image<br>
-        <span>or Click / Press Enter to Browse</span>
-    </p>
-    <div class="scan-actions hidden" id="scan-actions">
-    <button class="scan-btn save" data-action="save">💾 Save</button>
-    <button class="scan-btn confirm">✔ Confirm</button>
-    <button class="scan-btn back">← Back</button>
-</div>
-</section>
+            <p class="drop-text">
+                Upload Target<br>
+                <span>Click or Drag Image to Scan</span>
+            </p>
+
+            <!-- SCAN PROGRESS TIMELINE -->
+            <ul class="scan-timeline hidden" id="scan-timeline">
+                <li class="active">Extracting image features</li>
+                <li>Analyzing pixel consistency</li>
+                <li>Verifying metadata integrity</li>
+                <li>Running GAN detection models</li>
+            </ul>
+
+            <div class="scan-actions hidden" id="scan-actions">
+                <button class="scan-btn save" data-action="save">💾 Save</button>
+                <button class="scan-btn confirm" data-action="confirm">✔ Confirm</button>
+                <button class="scan-btn back" data-action="back">← Back</button>
+            </div>
+        </section>
 
         <!-- SIDE -->
         <div class="side-column">
 
             <section class="bento-tile compact score-tile">
-                <h3>Authenticity Score</h3>
+                <h3>Metrics Card</h3>
+                <small class="muted">Authenticity Score</small>
+
                 <div class="gauge-wrapper">
                     <svg viewBox="0 0 100 50">
                         <path class="gauge-bg" d="M10,45 A35,35 0 0,1 90,45"/>
@@ -79,6 +91,7 @@
     <section class="bento-tile compact history-tile">
         <h3>Scan History <span id="history-lock">🔒</span></h3>
         <div class="history-grid" id="history-container">
+            <div class="history-item placeholder"></div>
             <div class="history-item placeholder"></div>
             <div class="history-item placeholder"></div>
             <div class="history-item placeholder"></div>
